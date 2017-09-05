@@ -1,13 +1,29 @@
 #!/bin/sh
 
-NETWORK=$(mktemp) &&
+KEY=$(mktemp) &&
+    CERT=$(mktemp) &&
+    rm -f ${KEY} ${CERT} &&
+    (openssl req -x509 -newkey rsa:4096 -keyout ${KEY} -out ${CERT} -days 365 -nodes <<EOF
+US
+Virginia
+Arlington
+Endless Planet
+Heavy Industries
+registry
+
+
+
+
+EOF
+) &&
+    NETWORK=$(mktemp) &&
     DIND=$(mktemp) &&
     CLIENT=$(mktemp) &&
     cleanup() {
         docker container stop $(cat ${DIND}) $(cat ${CLIENT}) &&
             docker container rm --force --volumes $(cat ${DIND}) $(cat ${CLIENT}) &&
             docker network rm $(cat ${NETWORK}) &&
-            rm -f ${NETWORK} ${DIND} ${CLIENT}
+            rm -f ${NETWORK} ${DIND} ${CLIENT} ${KEY} ${CERT}
     } &&
     trap cleanup EXIT &&
     docker network create $(uuidgen) > ${NETWORK} &&
@@ -33,6 +49,8 @@ NETWORK=$(mktemp) &&
         --workdir /home/user \
         --env ID_RSA="$(cat ~/.ssh/id_rsa)" \
         --env KNOWN_HOSTS="$(cat ~/.ssh/known_hosts)" \
+        --env KEY="$(cat ${KEY})" \
+        --env CERT="$(cat ${CERT})" \
         --env DOCKER_HOST="tcp://docker:2376" \
         endlessplanet/client &&
     docker network connect $(cat ${NETWORK}) $(cat ${CLIENT}) &&
