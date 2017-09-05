@@ -47,6 +47,8 @@ EOF
         --tty \
         --volume /var/run/docker.sock:/var/run/docker.sock:ro \
         --workdir /home/user \
+        --env DOCKERHUB_USERNAME \
+        --env DOCKERHUB_PASSWORD \
         --env ID_RSA="$(cat ~/.ssh/id_rsa)" \
         --env KNOWN_HOSTS="$(cat ~/.ssh/known_hosts)" \
         --env KEY="$(cat ${KEY})" \
