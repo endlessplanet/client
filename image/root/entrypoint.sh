@@ -2,19 +2,6 @@
 
 docker login --username ${DOCKERHUB_USERNAME} --password ${DOCKERHUB_PASSWORD} &&
     # docker pull endlessplanet/registry &&
-    (openssl req -x509 -newkey rsa:4096 -keyout ${HOME}/certificates/registry.key -out ${HOME}/certificates/registry.crt -days 365 -nodes <<EOF
-US
-Virginia
-Arlington
-Endless Planet
-Heavy Industries
-registry
-
-
-
-
-EOF
-    ) &&
     docker network create special &&
     docker \
         container \
@@ -27,6 +14,9 @@ EOF
         --env REGISTRY_HTTP_TLS_KEY=/registry.key \
         registry:2.6.2 &&
     docker network connect --alias registry special registry &&
+    echo "${CERT}" > ${HOME}/certificates/registry.crt &&
+    echo "${KEY}" > ${HOME}/certificates/registry.key &&
+    chmod 0644 ${HOME}/certificates/registry.crt ${HOME}/certificates/registry.key &&
     docker container cp ${HOME}/certificates/registry.crt registry:/registry.crt &&
     docker container cp ${HOME}/certificates/registry.key registry:/registry.key &&
     docker container start registry &&
