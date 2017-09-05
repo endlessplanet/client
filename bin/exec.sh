@@ -20,7 +20,8 @@ EOF
     DIND=$(mktemp) &&
     CLIENT=$(mktemp) &&
     cleanup() {
-        docker container stop $(cat ${DIND}) $(cat ${CLIENT}) &&
+        echo -e "CLEANUP DIND=\"$(cat ${DIND})\" CLIENT=\"$(cat ${CLIENT})\" NETWORK=\"$(cat ${NETWORK})\"" &&
+            docker container stop $(cat ${DIND}) $(cat ${CLIENT}) &&
             docker container rm --force --volumes $(cat ${DIND}) $(cat ${CLIENT}) &&
             docker network rm $(cat ${NETWORK}) &&
             rm -f ${NETWORK} ${DIND} ${CLIENT} ${KEY} ${CERT}
@@ -44,7 +45,6 @@ EOF
         --cidfile ${CLIENT} \
         --interactive \
         --tty \
-        --rm \
         --volume /var/run/docker.sock:/var/run/docker.sock:ro \
         --workdir /home/user \
         --env ID_RSA="$(cat ~/.ssh/id_rsa)" \
