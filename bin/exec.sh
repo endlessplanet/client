@@ -4,7 +4,7 @@ CID_FILE=$(mktemp) &&
     rm ${CID_FILE} &&
     docker \
         container \
-        run \
+        create \
         --cidfile ${CID_FILE} \
         --tty \
         --rm \
