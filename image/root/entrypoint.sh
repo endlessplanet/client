@@ -21,16 +21,18 @@ EOF
         create \
         --name registry \
         --publish 5000:5000 \
+        --env REGISTRY_HTTP_ADDR=0.0.0.0:5000 \
         registry:2.6.2 &&
     docker network connect --alias registry special registry &&
     docker container start registry &&
     docker image pull alpine:3.4 &&
-    docker image tag alpine:3.4 localhost:5000/my-alpine3:1 &&
-    docker image push localhost:5000/my-alpine3:1 &&
-    docker image rm alpine:3.4 localhost:5000/my-alpine3:1 &&
+    docker image tag alpine:3.4 localhost:5000/my-alpine2:1 &&
+    docker image push localhost:5000/my-alpine2:1 &&
+    docker image tag alpine:3.4 registry:5000/my-alpine3:1 &&
+    # docker image push registry:5000/my-alpine3:1 &&
     docker image ls &&
-    docker image pull localhost:5000/my-alpine3:1 &&
+    docker image rm alpine:3.4 localhost:5000/my-alpine2:1 registry:5000/my-alpine3:1 &&
+    docker image pull localhost:5000/my-alpine2:1 &&
+    # docker image pull registry:5000/my-alpine3:1 &&
     docker image ls &&
-    # docker image tag alpine:3.4 registry/my-alpine2:1 &&
-    # docker image push registry/my-alpine2:1 &&
     bash
