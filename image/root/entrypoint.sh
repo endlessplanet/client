@@ -2,13 +2,26 @@
 
 docker login --username ${DOCKERHUB_USERNAME} --password ${DOCKERHUB_PASSWORD} &&
     # docker pull endlessplanet/registry &&
+    (openssl req -x509 -newkey rsa:4096 -keyout ${HOME}/certificates/registry.key -out ${HOME}/certificates/registry.crt -days 365 -nodes <<EOF
+US
+Virginia
+Arlington
+Endless Planet
+Heavy Industries
+registry
+
+
+
+
+EOF
+    ) &&
     docker network create special &&
     docker \
         container \
         create \
         --name registry \
         --publish 5000:5000 \
-        registry:2 &&
+        registry:2.6.2 &&
     docker network connect --alias registry special registry &&
     docker container start registry &&
     docker image pull alpine:3.4 &&

@@ -3,19 +3,6 @@
 KEY=$(mktemp) &&
     CERT=$(mktemp) &&
     rm -f ${KEY} ${CERT} &&
-    (openssl req -x509 -newkey rsa:4096 -keyout ${KEY} -out ${CERT} -days 365 -nodes <<EOF
-US
-Virginia
-Arlington
-Endless Planet
-Heavy Industries
-registry
-
-
-
-
-EOF
-) &&
     NETWORK=$(mktemp) &&
     DIND=$(mktemp) &&
     CLIENT=$(mktemp) &&
@@ -49,8 +36,6 @@ EOF
         --workdir /home/user \
         --env DOCKERHUB_USERNAME \
         --env DOCKERHUB_PASSWORD \
-        --env KEY="$(cat ${KEY})" \
-        --env CERT="$(cat ${CERT})" \
         --env DOCKER_HOST="tcp://docker:2376" \
         endlessplanet/client &&
     docker network connect $(cat ${NETWORK}) $(cat ${CLIENT}) &&
