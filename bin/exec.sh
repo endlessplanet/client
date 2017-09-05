@@ -6,6 +6,7 @@ CID_FILE=$(mktemp) &&
         container \
         create \
         --cidfile ${CID_FILE} \
+        --interactive \
         --tty \
         --rm \
         --volume /var/run/docker.sock:/var/run/docker.sock:ro \
