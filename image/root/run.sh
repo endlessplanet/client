@@ -18,4 +18,7 @@ apk update &&
     git -C /home/user/projects/registry config user.email "${EMAIL}" &&
     git -C /home/user/projects/registry remote add origin git@github.com:endlessplanet/registry.git
     chown -R user:user /home/user/projects &&
+    mkdir /home/user/docker &&
+    mkdir /home/user/docker/containers &&
+    chown -R user:user /home/user/docker &&
     rm -rf /var/cache/apk/*

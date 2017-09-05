@@ -34,5 +34,6 @@ registry
 
 EOF
     fi &&
-    sudo cp ${HOME}/certs/domain.crt /etc/docker/certs.d/registry:5000/ca.crt &&
+    sudo mkdir /etc/ca-certificates/registry:5000/ &&
+    sudo cp ${HOME}/certs/domain.crt /etc/ca-certificates/registry:5000/ca.crt &&
     bash
