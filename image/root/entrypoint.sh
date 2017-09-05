@@ -15,4 +15,6 @@ fi &&
         echo "${KNOWN_HOSTS}" > ${HOME}/.ssh/known_hosts &&
             chmod 0600 ${HOME}/.ssh/known_hosts
     fi &&
+    docker login --username ${DOCKERHUB_USERNAME} --password ${DOCKERHUB_PASSWORD} &&
+    docker pull endlessplanet/registry &&
     bash
