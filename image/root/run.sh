@@ -21,4 +21,6 @@ apk update &&
     mkdir /home/user/docker/containers &&
     mkdir /home/user/docker/networks &&
     chown -R user:user /home/user/docker &&
+    cp /opt/docker/shutdown.sh /usr/local/bin/shutdown.sh &&
+    chmod 0555 /usr/local/bin/shutdown.sh &&
     rm -rf /var/cache/apk/*

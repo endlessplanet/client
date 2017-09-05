@@ -1,13 +1,16 @@
 #!/bin/sh
 
-sudo --preserve-env docker network create $(uuidgen) > ${HOME}/docker/networks/default &&
-    sudo --preserve-env \
-        docker container \
-        create \
-        --cidfile ${HOME}/docker/containers/dind \
-        --privileged \
-        docker:17.07.0-ce-dind \
-        --host tcp://0.0.0.0:2376 &&
+trap /usr/local/bin/shutdown.sh SIGTERM &&
+    sudo --preserve-env docker network create $(uuidgen) > ${HOME}/docker/networks/default &&
+        sudo --preserve-env \
+            docker \
+            container \
+            create \
+            --cidfile ${HOME}/docker/containers/dind \
+            --privileged \
+            docker:17.07.0-ce-dind \
+            --host tcp://0.0.0.0:2376 &&
+    sudo --preserve-env docker network connect --link docker $(cat ${HOME}/docker/networks/default) $(cat ${HOME}/docker/containers/dind)
     if [ ! -d ${HOME}/.ssh ]
     then
         mkdir ${HOME}/.ssh &&
