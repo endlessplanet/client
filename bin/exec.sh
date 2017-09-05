@@ -1,11 +1,30 @@
 #!/bin/sh
 
-CID_FILE=$(mktemp) &&
-    rm ${CID_FILE} &&
+NETWORK=$(mktemp) &&
+    DIND=$(mktemp) &&
+    CLIENT=$(mktemp) &&
+    cleanup() {
+        docker container stop ${DIND} ${CLIENT} &&
+            docker container rm --force --volumes ${DIND} ${CLIENT} &&
+            docker network rm ${NETWORK} &&
+            rm -f ${NETWORK} ${DIND} ${CLIENT}
+    } &&
+    trap cleanup EXIT &&
+    docker network create $(uuidgen) > ${NETWORK} &&
+    rm -f ${DIND} &&
     docker \
         container \
         create \
-        --cidfile ${CID_FILE} \
+        --cidfile ${DIND} \
+        --privileged \
+        docker:17.07.0-ce-dind \
+        --host tcp://0.0.0.0:2376 &&
+    docker network connect --alias docker $(cat ${NETWORK}) $(cat ${DIND}) &&
+    docker container start $(cat ${DIND}) &&
+    docker \
+        container \
+        create \
+        --cidfile ${CLIENT} \
         --interactive \
         --tty \
         --rm \
@@ -13,5 +32,7 @@ CID_FILE=$(mktemp) &&
         --workdir /home/user \
         --env ID_RSA="$(cat ~/.ssh/id_rsa)" \
         --env KNOWN_HOSTS="$(cat ~/.ssh/known_hosts)" \
+        --env DOCKER_HOST="tcp://docker:2376" \
         endlessplanet/client &&
+    docker network connect $(cat ${NETWORK}) $(cat ${CLIENT}) &&
     docker container start --interactive $(cat ${CID_FILE})
