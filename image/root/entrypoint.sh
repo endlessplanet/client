@@ -36,4 +36,5 @@ EOF
     fi &&
     sudo mkdir /etc/ca-certificates/registry:5000/ &&
     sudo cp ${HOME}/certs/domain.crt /etc/ca-certificates/registry:5000/ca.crt &&
+    echo ${NETWORK} > ${HOME}/docker/networks/default &&
     bash
