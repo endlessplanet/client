@@ -10,7 +10,7 @@ trap /usr/local/bin/shutdown.sh SIGTERM &&
             --privileged \
             docker:17.07.0-ce-dind \
             --host tcp://0.0.0.0:2376 &&
-    sudo --preserve-env docker network connect --link /usr/local/bin/docker $(cat ${HOME}/docker/networks/default) $(cat ${HOME}/docker/containers/dind) &&
+    sudo --preserve-env docker network connect --alias docker /usr/local/bin/docker $(cat ${HOME}/docker/networks/default) $(cat ${HOME}/docker/containers/dind) &&
     sudo --preserve-env docker container start $(cat ${HOME}/docker/containers/dind) &&
     if [ ! -d ${HOME}/.ssh ]
     then
