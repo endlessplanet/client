@@ -1,9 +1,9 @@
 #!/bin/sh
 
 trap /usr/local/bin/shutdown.sh SIGTERM &&
-    sudo --preserve-env docker network create $(uuidgen) > ${HOME}/docker/networks/default &&
+    sudo --preserve-env /usr/local/bin/docker network create $(uuidgen) > ${HOME}/docker/networks/default &&
         sudo --preserve-env \
-            docker \
+            /usr/local/bin/docker \
             container \
             create \
             --cidfile ${HOME}/docker/containers/dind \
