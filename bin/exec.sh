@@ -49,8 +49,6 @@ EOF
         --workdir /home/user \
         --env DOCKERHUB_USERNAME \
         --env DOCKERHUB_PASSWORD \
-        --env ID_RSA="$(cat ~/.ssh/id_rsa)" \
-        --env KNOWN_HOSTS="$(cat ~/.ssh/known_hosts)" \
         --env KEY="$(cat ${KEY})" \
         --env CERT="$(cat ${CERT})" \
         --env DOCKER_HOST="tcp://docker:2376" \
