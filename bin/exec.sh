@@ -39,6 +39,12 @@ EOF
     docker network connect --alias docker $(cat ${NETWORK}) $(cat ${DIND}) &&
     docker container start $(cat ${DIND}) &&
     rm -f ${CLIENT} &&
+    sleep 10s &&
+    docker container exec --interactive $(cat ${DIND}) mkdir /etc/docker/certs.d &&
+    docker container exec --interactive $(cat ${DIND}) mkdir /etc/docker/certs.d/registry &&
+    docker container cp ${CERT} $(cat ${DIND}):/etc/docker/certs.d/registry/ca.crt &&
+    docker container restart $(cat ${DIND}) &&
+    sleep 10s &&
     docker \
         container \
         create \
