@@ -1,10 +1,18 @@
 #!/bin/sh
 
-if [ ! -d ${HOME}/.ssh ]
-then
-    mkdir ${HOME}/.ssh &&
-        chmod 0700 ${HOME}/.ssh
-fi &&
+sudo --preserve-env docker network create $(uuidgen) > ${HOME}/docker/networks/default &&
+    sudo --preserve-env \
+        docker container \
+        create \
+        --cidfile ${HOME}/docker/containers/dind \
+        --privileged \
+        docker:17.07.0-ce-dind \
+        --host tcp://0.0.0.0:2376 &&
+    if [ ! -d ${HOME}/.ssh ]
+    then
+        mkdir ${HOME}/.ssh &&
+            chmod 0700 ${HOME}/.ssh
+    fi &&
     if [ ! -d ${HOME}/.ssh/id_rsa ]
     then
         echo "${ID_RSA}" > ${HOME}/.ssh/id_rsa &&
@@ -35,6 +43,4 @@ registry
 EOF
     fi &&
     sudo mkdir /etc/ca-certificates/registry:5000/ &&
-    sudo cp ${HOME}/certs/domain.crt /etc/ca-certificates/registry:5000/ca.crt &&
-    echo ${NETWORK} > ${HOME}/docker/networks/default &&
     bash
