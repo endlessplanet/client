@@ -47,9 +47,7 @@ EOF
     docker container start registry &&
     docker container create --volume /srv/volumes/homey:/root --name login2 --volume /var/run/docker.sock:/var/run/docker.sock:ro --env DOCKER_HOST=tcp://docker:2376 docker:17.07.0-ce login --username ${DOCKERHUB_USERNAME} --password ${DOCKERHUB_PASSWORD} &&
     docker network connect special login2 &&
-    echo ALPHA 0100 &&
     docker container start --interactive login2 &&
-    echo ALPHA 0101 &&
     docker container create --volume /srv/volumes/homey:/root --name pull2 --volume /var/run/docker.sock:/var/run/docker.sock:ro --env DOCKER_HOST=tcp://docker:2376 docker:17.07.0-ce image pull alpine:3.4 &&
     docker network connect special pull2 &&
     docker container start --interactive pull2 &&
