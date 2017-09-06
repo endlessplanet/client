@@ -24,7 +24,7 @@ NETWORK=$(mktemp) &&
         --add-host registry:172.19.0.2 \
         --volume $(cat ${VOLUMES}):/srv/volumes \
         docker:17.07.0-ce-dind \
-        --host tcp://0.0.0.0:2376 --insecure-registry registry:443 &&
+        --host tcp://0.0.0.0:2376 &&
     docker network connect --alias docker $(cat ${NETWORK}) $(cat ${DIND}) &&
     docker container start $(cat ${DIND}) &&
     rm -f ${CLIENT} &&
