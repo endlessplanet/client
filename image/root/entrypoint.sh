@@ -27,6 +27,4 @@ sh /opt/docker/setup-docker.sh &&
     docker container start --interactive pull-alpine &&
     docker container create --volume /srv/volumes/homey:/root --name ls22 --volume /var/run/docker.sock:/var/run/docker.sock:ro --env DOCKER_HOST=tcp://docker:2376 docker:17.07.0-ce docker image ls &&
     docker network connect special ls22 &&
-    docker container start --interactive ls22 &&
-    which docker &&
-    env
+    docker container start --interactive ls22
