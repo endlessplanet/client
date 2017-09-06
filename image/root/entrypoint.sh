@@ -42,14 +42,12 @@ docker login --username ${DOCKERHUB_USERNAME} --password ${DOCKERHUB_PASSWORD} &
     docker container start wtf &&
     docker container create --volume homey:/root --name login --volume /var/run/docker.sock:/var/run/docker.sock:ro docker:17.07.0-ce login --username user --password password https://registry:443 &&
     docker network connect special login &&
-    bash &&
     docker container start --interactive login &&
     docker container create --volume homey:/root --name push-alpine --volume /var/run/docker.sock:/var/run/docker.sock:ro docker:17.07.0-ce image push registry:443/it/my-alpine3:1 &&
     docker network connect special push-alpine &&
     docker container exec -it wtf mkdir /etc/docker &&
     docker container cp /opt/docker/daemon.json wtf:/etc/docker/daemon.json &&
     docker container restart wtf &&
-    bash &&
     docker container start --interactive push-alpine &&
     docker image ls &&
     docker image rm alpine:3.4 localhost:443/my-alpine2:1 registry:443/it/my-alpine3:1 &&

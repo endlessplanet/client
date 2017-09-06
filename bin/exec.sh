@@ -34,6 +34,7 @@ EOF
         create \
         --cidfile ${DIND} \
         --privileged \
+        --add-host registry:172.19.0.2 \
         docker:17.07.0-ce-dind \
         --host tcp://0.0.0.0:2376 --insecure-registry registry:443 &&
     docker network connect --alias docker $(cat ${NETWORK}) $(cat ${DIND}) &&
