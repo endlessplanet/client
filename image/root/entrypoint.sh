@@ -3,8 +3,9 @@
 docker login --username ${DOCKERHUB_USERNAME} --password ${DOCKERHUB_PASSWORD} &&
     docker volume create auth &&
     docker network create special &&
-    mkdir ${HOME}/auth &&
-    docker run --interactive --tty --rm --entrypoint htpasswd registry:2.6.2 -Bnb user password | docker container run --interactive --rm --volume auth:/auth --workdir /auth alpine:3.4 tee htpasswd &&
+    sudo mkdir /srv/volumes/auth &&
+    docker container create --name genpass --interactive --entrypoint htpasswd registry:2.6.2 -Bnb user password &&
+    docker container start --interactive genpass | sudo tee /srv/volumes/auth/htpasswd &&
     sudo mkdir /srv/volumes/certs &&
     echo "${CERT}" | sudo tee /srv/volumes/certs/registry.crt &&
     echo "${KEY}" | sudo tee /srv/volumes/certs/registry.key &&
@@ -16,7 +17,7 @@ docker login --username ${DOCKERHUB_USERNAME} --password ${DOCKERHUB_PASSWORD} &
         --publish 5000:5000 \
         --publish 80:443 \
         --publish 443:443 \
-        --volume auth:/auth \
+        --volume /srv/volumes/auth:/auth \
         --volume /srv/volumes/certs:/certs \
         --env REGISTRY_HTTP_ADDR=0.0.0.0:443 \
         --env REGISTRY_HTTP_TLS_CERTIFICATE=/certs/registry.crt \
