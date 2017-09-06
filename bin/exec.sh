@@ -1,22 +1,6 @@
 #!/bin/sh
 
-KEY=$(mktemp) &&
-    CERT=$(mktemp) &&
-    rm -f ${KEY} ${CERT} &&
-    (openssl req -x509 -newkey rsa:4096 -keyout ${KEY} -out ${CERT} -days 365 -nodes <<EOF
-US
-Virginia
-Arlington
-Endless Planet
-Heavy Industries
-registry
-
-
-
-
-EOF
-    ) &&
-    NETWORK=$(mktemp) &&
+NETWORK=$(mktemp) &&
     DIND=$(mktemp) &&
     CLIENT=$(mktemp) &&
     VOLUMES=$(mktemp) &&
@@ -26,7 +10,7 @@ EOF
             docker container rm --force --volumes $(cat ${DIND}) $(cat ${CLIENT}) &&
             docker network rm $(cat ${NETWORK}) &&
             docker volume rm $(cat ${VOLUMES}) &&
-            rm -f ${NETWORK} ${DIND} ${CLIENT} ${KEY} ${CERT} ${VOLUMES}
+            rm -f ${NETWORK} ${DIND} ${CLIENT} ${VOLUMES}
     } &&
     trap cleanup EXIT &&
     docker network create $(uuidgen) > ${NETWORK} &&
@@ -48,7 +32,7 @@ EOF
     # docker container cp daemon.json $(cat ${DIND}):/etc/docker/daemon.json &&
     docker container exec --interactive $(cat ${DIND}) mkdir /etc/docker/certs.d &&
     docker container exec --interactive $(cat ${DIND}) mkdir /etc/docker/certs.d/registry &&
-    docker container cp ${CERT} $(cat ${DIND}):/etc/docker/certs.d/registry/ca.crt &&
+    # docker container cp ${CERT} $(cat ${DIND}):/etc/docker/certs.d/registry/ca.crt &&
     docker container restart $(cat ${DIND}) &&
     sleep 5s &&
     docker \
@@ -60,8 +44,6 @@ EOF
         --volume /var/run/docker.sock:/var/run/docker.sock:ro \
         --volume $(cat ${VOLUMES}):/srv/volumes \
         --workdir /home/user \
-        --env KEY="$(cat ${KEY})" \
-        --env CERT="$(cat ${CERT})" \
         --env DOCKERHUB_USERNAME \
         --env DOCKERHUB_PASSWORD \
         --env DOCKER_HOST="tcp://docker:2376" \

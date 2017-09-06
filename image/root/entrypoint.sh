@@ -7,8 +7,19 @@ docker login --username ${DOCKERHUB_USERNAME} --password ${DOCKERHUB_PASSWORD} &
     docker container create --name genpass --interactive --entrypoint htpasswd registry:2.6.2 -Bnb user password &&
     docker container start --interactive genpass | sudo tee /srv/volumes/auth/htpasswd &&
     sudo mkdir /srv/volumes/certs &&
-    echo "${CERT}" | sudo tee /srv/volumes/certs/registry.crt &&
-    echo "${KEY}" | sudo tee /srv/volumes/certs/registry.key &&
+    (sudo openssl req -x509 -newkey rsa:4096 -keyout /srv/volumes/certs/registry.key  -out /srv/volumes/certs/registry.crt -days 365 -nodes <<EOF
+US
+Virginia
+Arlington
+Endless Planet
+Heavy Industries
+registry
+
+
+
+
+EOF
+    ) &&
     sudo chmod 0644 /srv/volumes/certs/registry.crt /srv/volumes/certs/registry.key &&
     docker \
         container \
