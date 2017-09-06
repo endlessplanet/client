@@ -35,12 +35,12 @@ EOF
         --cidfile ${DIND} \
         --privileged \
         docker:17.07.0-ce-dind \
-        --host tcp://0.0.0.0:2376 &&
+        --host tcp://0.0.0.0:2376 --insecure-registry registry:443 &&
     docker network connect --alias docker $(cat ${NETWORK}) $(cat ${DIND}) &&
     docker container start $(cat ${DIND}) &&
     rm -f ${CLIENT} &&
     sleep 5s &&
-    docker container cp daemon.json $(cat ${DIND}):/etc/docker/daemon.json &&
+    # docker container cp daemon.json $(cat ${DIND}):/etc/docker/daemon.json &&
     docker container exec --interactive $(cat ${DIND}) mkdir /etc/docker/certs.d &&
     docker container exec --interactive $(cat ${DIND}) mkdir /etc/docker/certs.d/registry &&
     docker container cp ${CERT} $(cat ${DIND}):/etc/docker/certs.d/registry/ca.crt &&
