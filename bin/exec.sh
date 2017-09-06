@@ -21,7 +21,6 @@ NETWORK=$(mktemp) &&
         create \
         --cidfile ${DIND} \
         --privileged \
-        --add-host registry:172.19.0.2 \
         --volume $(cat ${VOLUMES}):/srv/volumes \
         docker:17.07.0-ce-dind \
         --host tcp://0.0.0.0:2376 &&
