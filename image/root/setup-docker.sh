@@ -1,6 +1,9 @@
 #!/bin/sh
 
 /usr/local/bin/docker login --username ${DOCKERHUB_USERNAME} --password ${DOCKERHUB_PASSWORD} &&
+    /usr/local/bin/docker pull docker:17.07.0-ce-dind &&
+    /usr/local/bin/docker pull docker:17.07.0-ce &&
+    /usr/local/bin/docker logout &&
     /usr/local/bin/docker volume create auth &&
     /usr/local/bin/docker network create special &&
     sudo mkdir /srv/volumes/auth &&
