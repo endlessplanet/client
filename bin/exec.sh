@@ -36,11 +36,11 @@ EOF
         --privileged \
         docker:17.07.0-ce-dind \
         --host tcp://0.0.0.0:2376 &&
-    docker network cp daemon.json $(cat ${DIND}):/etc/docker/daemon.json &&
     docker network connect --alias docker $(cat ${NETWORK}) $(cat ${DIND}) &&
     docker container start $(cat ${DIND}) &&
     rm -f ${CLIENT} &&
     sleep 5s &&
+    docker container cp daemon.json $(cat ${DIND}):/etc/docker/daemon.json &&
     docker container exec --interactive $(cat ${DIND}) mkdir /etc/docker/certs.d &&
     docker container exec --interactive $(cat ${DIND}) mkdir /etc/docker/certs.d/registry &&
     docker container cp ${CERT} $(cat ${DIND}):/etc/docker/certs.d/registry/ca.crt &&
