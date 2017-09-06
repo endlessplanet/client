@@ -36,7 +36,7 @@ docker login --username ${DOCKERHUB_USERNAME} --password ${DOCKERHUB_PASSWORD} &
     docker image tag alpine:3.4 localhost:443/my-alpine2:1 &&
     docker login --username user --password password localhost:443 &&
     docker image push localhost:443/my-alpine2:1 &&
-    docker image tag alpine:3.4 registry/it/my-alpine3:1 &&
+    docker image tag alpine:3.4 registry:443/it/my-alpine3:1 &&
     docker container create --volume homey:/root --tty --name wtf --volume /var/run/docker.sock:/var/run/docker.sock:ro --entrypoint sh docker:17.07.0-ce &&
     docker network connect special wtf &&
     docker container start wtf &&
@@ -52,7 +52,7 @@ docker login --username ${DOCKERHUB_USERNAME} --password ${DOCKERHUB_PASSWORD} &
     bash &&
     docker container start --interactive push-alpine &&
     docker image ls &&
-    docker image rm alpine:3.4 localhost:443/my-alpine2:1 registry/it/my-alpine3:1 &&
+    docker image rm alpine:3.4 localhost:443/my-alpine2:1 registry:443/it/my-alpine3:1 &&
     docker image pull localhost:443/my-alpine2:1 &&
     docker container create --volume homey:/root --name pull-alpine --volume /var/run/docker.sock:/var/run/docker.sock:ro docker:17.07.0-ce image pull registry:443/it/my-alpine3:1 &&
     docker network connect special pull-alpine &&
