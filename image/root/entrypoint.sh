@@ -1,17 +1,14 @@
 #!/bin/sh
 
 docker login --username ${DOCKERHUB_USERNAME} --password ${DOCKERHUB_PASSWORD} &&
-    docker volume create certs &&
     docker volume create auth &&
     docker network create special &&
     mkdir ${HOME}/auth &&
     docker run --interactive --tty --rm --entrypoint htpasswd registry:2.6.2 -Bnb user password | docker container run --interactive --rm --volume auth:/auth --workdir /auth alpine:3.4 tee htpasswd &&
-    echo "${CERT}" > ${HOME}/certificates/registry.crt &&
-    echo "${KEY}" > ${HOME}/certificates/registry.key &&
-    chmod 0644 ${HOME}/certificates/registry.crt ${HOME}/certificates/registry.key &&
-    cat ${HOME}/certificates/registry.crt | docker container run --interactive --rm --volume certs:/certs --workdir /certs alpine:3.4 tee registry.crt &&
-    cat ${HOME}/certificates/registry.key | docker container run --interactive --rm --volume certs:/certs --workdir /certs alpine:3.4 tee registry.key &&
-    docker container run --interactive --rm --volume certs:/certs --workdir /certs alpine:3.4 chmod 0644 registry.key registry.crt &&
+    sudo mkdir /srv/volumes/certs &&
+    echo "${CERT}" | sudo tee /srv/volumes/certs/registry.crt &&
+    echo "${KEY}" | sudo tee /srv/volumes/certs/registry.key &&
+    sudo chmod 0644 /srv/volumes/certs/registry.crt /srv/volumes/certs/registry.key &&
     docker \
         container \
         create \
@@ -20,7 +17,7 @@ docker login --username ${DOCKERHUB_USERNAME} --password ${DOCKERHUB_PASSWORD} &
         --publish 80:443 \
         --publish 443:443 \
         --volume auth:/auth \
-        --volume certs:/certs \
+        --volume /srv/volumes/certs:/certs \
         --env REGISTRY_HTTP_ADDR=0.0.0.0:443 \
         --env REGISTRY_HTTP_TLS_CERTIFICATE=/certs/registry.crt \
         --env REGISTRY_HTTP_TLS_KEY=/certs/registry.key \
