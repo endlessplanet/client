@@ -14,9 +14,6 @@ docker login --username ${DOCKERHUB_USERNAME} --password ${DOCKERHUB_PASSWORD} &
         container \
         create \
         --name registry \
-        --publish 5000:5000 \
-        --publish 80:443 \
-        --publish 443:443 \
         --volume /srv/volumes/auth:/auth \
         --volume /srv/volumes/certs:/certs \
         --env REGISTRY_HTTP_ADDR=0.0.0.0:443 \
@@ -29,9 +26,6 @@ docker login --username ${DOCKERHUB_USERNAME} --password ${DOCKERHUB_PASSWORD} &
     docker network connect --alias registry special registry &&
     docker container start registry &&
     docker image pull alpine:3.4 &&
-    docker image tag alpine:3.4 localhost:443/my-alpine2:1 &&
-    docker login --username user --password password localhost:443 &&
-    docker image push localhost:443/my-alpine2:1 &&
     docker image tag alpine:3.4 registry:443/it/my-alpine3:1 &&
     docker container create --volume /srv/volumes/homey:/root --tty --name wtf --volume /var/run/docker.sock:/var/run/docker.sock:ro --entrypoint sh docker:17.07.0-ce &&
     docker network connect special wtf &&
@@ -46,8 +40,7 @@ docker login --username ${DOCKERHUB_USERNAME} --password ${DOCKERHUB_PASSWORD} &
     docker container restart wtf &&
     docker container start --interactive push-alpine &&
     docker image ls &&
-    docker image rm alpine:3.4 localhost:443/my-alpine2:1 registry:443/it/my-alpine3:1 &&
-    docker image pull localhost:443/my-alpine2:1 &&
+    docker image rm alpine:3.4 registry:443/it/my-alpine3:1 &&
     docker container create --volume /srv/volumes/homey:/root --name pull-alpine --volume /var/run/docker.sock:/var/run/docker.sock:ro docker:17.07.0-ce image pull registry:443/it/my-alpine3:1 &&
     docker network connect special pull-alpine &&
     docker container start --interactive pull-alpine &&
