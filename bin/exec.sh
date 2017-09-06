@@ -19,15 +19,18 @@ EOF
     NETWORK=$(mktemp) &&
     DIND=$(mktemp) &&
     CLIENT=$(mktemp) &&
+    VOLUMES=$(mktemp) &&
     cleanup() {
-        echo -e "CLEANUP DIND=\"$(cat ${DIND})\" CLIENT=\"$(cat ${CLIENT})\" NETWORK=\"$(cat ${NETWORK})\"" &&
+        echo -e "CLEANUP DIND=\"$(cat ${DIND})\" CLIENT=\"$(cat ${CLIENT})\" NETWORK=\"$(cat ${NETWORK})\" VOLUMES=\"$(cat ${VOLUMES})\"" &&
             docker container stop $(cat ${DIND}) $(cat ${CLIENT}) &&
             docker container rm --force --volumes $(cat ${DIND}) $(cat ${CLIENT}) &&
             docker network rm $(cat ${NETWORK}) &&
-            rm -f ${NETWORK} ${DIND} ${CLIENT} ${KEY} ${CERT}
+            docker volume rm $(cat ${VOLUMES}) &&
+            rm -f ${NETWORK} ${DIND} ${CLIENT} ${KEY} ${CERT} ${VOLUMES}
     } &&
     trap cleanup EXIT &&
     docker network create $(uuidgen) > ${NETWORK} &&
+    docker volume create > ${VOLUMES} &&
     rm -f ${DIND} &&
     docker \
         container \
@@ -35,6 +38,7 @@ EOF
         --cidfile ${DIND} \
         --privileged \
         --add-host registry:172.19.0.2 \
+        --volume $(cat ${VOLUMES}):/srv/volumes \
         docker:17.07.0-ce-dind \
         --host tcp://0.0.0.0:2376 --insecure-registry registry:443 &&
     docker network connect --alias docker $(cat ${NETWORK}) $(cat ${DIND}) &&
@@ -54,6 +58,7 @@ EOF
         --interactive \
         --tty \
         --volume /var/run/docker.sock:/var/run/docker.sock:ro \
+        --volume $(cat ${VOLUMES}):/srv/volumes \
         --workdir /home/user \
         --env KEY="$(cat ${KEY})" \
         --env CERT="$(cat ${CERT})" \
