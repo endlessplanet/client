@@ -1,20 +1,20 @@
 #!/bin/sh
 
-docker login --username ${DOCKERHUB_USERNAME} --password ${DOCKERHUB_PASSWORD} &&
-    docker volume create auth &&
-    docker network create special &&
+/usr/local/bin/docker login --username ${DOCKERHUB_USERNAME} --password ${DOCKERHUB_PASSWORD} &&
+    /usr/local/bin/docker volume create auth &&
+    /usr/local/bin/docker network create special &&
     sudo mkdir /srv/volumes/auth &&
-    docker \
+    /usr/local/bin/docker \
         container \
         create \
         --name dind \
         --privileged \
         docker:17.07.0-ce-dind \
         --host tcp://0.0.0.0:2376 --insecure-registry registry:443 &&
-    docker network connect --alias docker special dind &&
-    docker container start dind &&
-    docker container create --name genpass --interactive --entrypoint htpasswd registry:2.6.2 -Bnb user password &&
-    docker container start --interactive genpass | sudo tee /srv/volumes/auth/htpasswd &&
+    /usr/local/bin/docker network connect --alias docker special dind &&
+    /usr/local/bin/docker container start dind &&
+    /usr/local/bin/docker container create --name genpass --interactive --entrypoint htpasswd registry:2.6.2 -Bnb user password &&
+    /usr/local/bin/docker container start --interactive genpass | sudo tee /srv/volumes/auth/htpasswd &&
     sudo mkdir /srv/volumes/certs &&
     (sudo openssl req -x509 -newkey rsa:4096 -keyout /srv/volumes/certs/registry.key  -out /srv/volumes/certs/registry.crt -days 365 -nodes <<EOF
 US
@@ -30,7 +30,7 @@ registry
 EOF
     ) &&
     sudo chmod 0644 /srv/volumes/certs/registry.crt /srv/volumes/certs/registry.key &&
-    docker \
+    /usr/local/bin/docker \
         container \
         create \
         --name registry \
@@ -43,5 +43,5 @@ EOF
         --env REGISTRY_AUTH_HTPASSWD_REALM="Registry Realm" \
         --env REGISTRY_AUTH_HTPASSWD_PATH=/auth/htpasswd \
         registry:2.6.2 &&
-    docker network connect --alias registry special registry &&
-    docker container start registry
+    /usr/local/bin/docker network connect --alias registry special registry &&
+    /usr/local/bin/docker container start registry
