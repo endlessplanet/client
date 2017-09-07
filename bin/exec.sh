@@ -17,6 +17,13 @@ NETWORK=$(mktemp) &&
     docker network create $(uuidgen) > ${NETWORK} &&
     docker volume create > ${VOLUMES} &&
     rm -f ${DIND} &&
+    rm ${SSHD} &&
+    docker \
+        container \
+        create \
+        --cidfile ${SSHD} \
+        rastasheep/ubuntu-sshd:14.04 &&
+    docker network connect --alias sshd $(cat ${NETWORK}) $(cat ${SSHD}) &&
     docker \
         container \
         create \
@@ -45,13 +52,6 @@ NETWORK=$(mktemp) &&
         --volume /tmp/.X11-unix:/tmp/.X11-unix:ro \
         endlessplanet/client &&
     docker network connect $(cat ${NETWORK}) $(cat ${CLIENT}) &&
-    rm ${SSHD} &&
-    docker \
-        container \
-        create \
-        --cidfile ${SSHD} \
-        rastasheep/ubuntu-sshd:14.04 &&
-    docker network connect --alias sshd $(cat ${NETWORK}) $(cat ${SSHD}) &&
     docker container start $(cat ${DIND}) &&
-    docker container start --interactive $(cat ${CLIENT}) &&
-    docker container start $(cat ${SSHD})
+    docker container start $(cat ${SSHD}) &&
+    docker container start --interactive $(cat ${CLIENT})
