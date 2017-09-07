@@ -48,8 +48,8 @@ NETWORK=$(mktemp) &&
     rm ${SSHD} &&
     docker \
         container \
-        --cidfile ${SSHD} \
         create \
+        --cidfile ${SSHD} \
         rastasheep/ubuntu-sshd:14.04 &&
     docker network connect --alias sshd $(cat ${NETWORK}) $(cat ${SSHD}) &&
     docker container start $(cat ${DIND}) &&
